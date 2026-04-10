@@ -1,277 +1,100 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Oregon DMV Practice Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Oregon DMV Practice</title>
 <style>
-* { box-sizing: border-box; }
-:root {--bg:#f4f7fb; --card:#fff; --text:#132033; --muted:#5f6b7a; --line:#dfe7f2; --blue:#1f6feb; --blue-soft:#e7eefb; --good:#eaf8ef; --good-line:#88c79a; --bad:#fff1f1; --bad-line:#e4a7a7; --chip:#eef3ff;}
-html,body { margin:0; padding:0; background:var(--bg); color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; }
-body { padding:max(16px, env(safe-area-inset-top)) 16px max(16px, env(safe-area-inset-bottom)); }
-.app { max-width:920px; margin:0 auto; }
-.card { background:var(--card); border-radius:20px; padding:18px; box-shadow:0 10px 24px rgba(17,34,68,.08); margin-bottom:16px; }
-.hero h1 { margin:0 0 8px; font-size:1.95rem; }
-.subtitle { margin:0 0 4px; }
-.small,.muted { color:var(--muted); }
-.menu-grid,.topic-grid,.stats-grid { display:grid; gap:12px; grid-template-columns:1fr; }
-.row { display:flex; gap:10px; flex-wrap:wrap; }
-.row > * { flex:1 1 220px; }
-button { appearance:none; border:none; border-radius:16px; padding:16px; font-size:1rem; font-weight:700; background:var(--blue); color:#fff; cursor:pointer; }
-button.secondary { background:var(--blue-soft); color:#16335b; }
-button.ghost { background:#f3f6fb; color:#22344e; }
-button.choice { width:100%; text-align:left; line-height:1.35; background:#f7faff; color:#12233d; border:2px solid #d7e5ff; font-weight:600; }
-button.choice.correct { background:var(--good); border-color:var(--good-line); color:#14361f; }
-button.choice.incorrect { background:var(--bad); border-color:var(--bad-line); color:#4d1818; }
-button:disabled { opacity:1; cursor:default; }
-.progress { display:flex; justify-content:space-between; gap:8px; font-size:.96rem; color:#4b5a6d; margin-bottom:12px; }
-.badge { display:inline-block; padding:6px 10px; background:var(--chip); color:#24426a; border-radius:999px; font-size:.88rem; margin:0 8px 8px 0; }
-.question { font-size:1.2rem; line-height:1.45; margin:8px 0 16px; }
-.list { display:grid; gap:10px; }
-.list-item { border:1px solid #e4eaf3; border-radius:14px; padding:12px 14px; background:#fbfcff; }
-.explanation { border-radius:14px; padding:14px; margin-top:14px; border:1px solid #e5ebf3; background:#f8fafc; }
-.explanation.good { background:#eef9f1; border-color:#b9ddc1; }
-.explanation.bad { background:#fff3f3; border-color:#efc2c2; }
-.center { text-align:center; }
-.score { font-size:1.06rem; line-height:1.6; }
-.kpi { padding:14px; border:1px solid var(--line); border-radius:16px; background:#fbfdff; }
-.kpi strong { display:block; font-size:1.3rem; margin-bottom:4px; }
-.sign-box { display:flex; justify-content:center; align-items:center; min-height:160px; border:1px solid var(--line); border-radius:18px; padding:12px; background:linear-gradient(180deg,#fff,#f8fbff); margin-bottom:14px; overflow:hidden; }
-svg.sign { width:min(240px,80vw); height:auto; }
-.footer-note { font-size:.92rem; }
-@media (min-width:700px) { .menu-grid,.topic-grid,.stats-grid { grid-template-columns:repeat(2,1fr); } }
+body{font-family:Arial;margin:0;background:#111;color:#fff;text-align:center}
+.container{padding:20px}
+button{padding:15px;margin:10px;font-size:18px;border:none;border-radius:8px;background:#0a84ff;color:white}
+.card{background:#1c1c1e;padding:20px;border-radius:12px;margin-top:20px}
 </style>
 </head>
 <body>
-<div class="app">
-  <header class="card hero">
-    <h1>Oregon DMV Practice Test</h1>
-    <p class="subtitle">Teen-friendly permit practice for iPhone.</p>
-    <p class="small">Offline • Tap-friendly • Progress saved on this device</p>
-  </header>
-  <main id="screen"></main>
+<div class="container">
+<h1>Oregon DMV Practice</h1>
+
+<div id="menu">
+<button onclick="startQuiz(10)">Quick Practice</button>
+<button onclick="startQuiz(35)">Full Test</button>
+<button onclick="startQuiz(20,true)">Hard Mode</button>
+<button onclick="showStats()">Progress</button>
 </div>
+
+<div id="quiz" style="display:none"></div>
+<div id="stats" style="display:none"></div>
+
+</div>
+
 <script>
-const QUESTION_BANK = [{"prompt": "How many questions are on Oregon's Class C knowledge test?", "choices": ["25", "35", "40", "50"], "answer": 1, "explanation": "Oregon's Class C knowledge test has 35 multiple-choice questions.", "topic": "Testing", "id": "q1", "difficulty": "standard"}, {"prompt": "How many correct answers do you need to pass Oregon's Class C knowledge test?", "choices": ["24", "26", "28", "30"], "answer": 2, "explanation": "You must answer 28 questions correctly to pass.", "topic": "Testing", "id": "q2", "difficulty": "standard"}, {"prompt": "At a STOP sign, what must you do first?", "choices": ["Slow down and continue if the road looks clear", "Come to a complete stop and yield as needed", "Honk and proceed carefully", "Only stop if pedestrians are present"], "answer": 1, "explanation": "A stop sign means you must come to a complete stop and yield as needed.", "topic": "Signs", "id": "q3", "difficulty": "standard"}, {"prompt": "A YIELD sign means you should:", "choices": ["Always come to a full stop", "Speed up before entering", "Reduce speed and yield the right of way; stop if needed", "Ignore it if there is no traffic"], "answer": 2, "explanation": "At a yield sign, reduce speed and yield. Stop if needed.", "topic": "Signs", "id": "q4", "difficulty": "standard"}, {"prompt": "A DO NOT ENTER sign warns you:", "choices": ["A road is closed for construction", "You are going the wrong way into a road or freeway", "Only trucks may enter", "Pedestrians have the right of way"], "answer": 1, "explanation": "This sign warns that you are about to enter the wrong way.", "topic": "Signs", "id": "q5", "difficulty": "standard"}, {"prompt": "Warning signs are usually what color?", "choices": ["Blue", "Brown", "Yellow", "Green"], "answer": 2, "explanation": "Warning signs are generally yellow.", "topic": "Signs", "id": "q6", "difficulty": "standard"}, {"prompt": "A five-sided yellow sign usually marks:", "choices": ["A railroad crossing", "A school zone or school crossing", "A hospital", "A no-passing zone"], "answer": 1, "explanation": "The five-sided yellow sign is associated with school zones and school crossings.", "topic": "Signs", "id": "q7", "difficulty": "standard"}, {"prompt": "If a traffic signal goes dark because of a power outage, you should:", "choices": ["Treat it like stop signs in all directions", "Treat it like a yield sign", "Wait for the car behind you to move first", "Only stop if cross traffic is present"], "answer": 0, "explanation": "A dark signal should be treated like an all-way stop.", "topic": "Signals", "id": "q8", "difficulty": "standard"}, {"prompt": "When turning from one road to another, you should usually turn into:", "choices": ["Any open lane", "The farthest lane from you", "The closest lane in the direction you want to go", "The bicycle lane first, then merge"], "answer": 2, "explanation": "Normally, turn into the closest available lane for your direction of travel.", "topic": "Turns", "id": "q9", "difficulty": "standard"}, {"prompt": "Before a turn or lane change, if your vehicle is moving in traffic, you should signal at least:", "choices": ["50 feet", "75 feet", "100 feet", "150 feet"], "answer": 2, "explanation": "Signal at least 100 feet before a turn or lane change.", "topic": "Turns", "id": "q10", "difficulty": "standard"}, {"prompt": "When approaching a roundabout, what should you do before entering?", "choices": ["Stop every time, then go", "Yield, wait for a gap, and merge into traffic", "Accelerate hard to force your way in", "Use your hazard lights"], "answer": 1, "explanation": "At a roundabout, slow down, yield to traffic already in it, and enter when there is a safe gap.", "topic": "Roundabouts", "id": "q11", "difficulty": "hard"}, {"prompt": "Inside a multi-lane roundabout, you should generally:", "choices": ["Change lanes often to get to your exit", "Maintain your lane until you exit", "Pass large trucks when possible", "Stop if an exit is crowded"], "answer": 1, "explanation": "Keep your lane until you exit the roundabout.", "topic": "Roundabouts", "id": "q12", "difficulty": "hard"}, {"prompt": "If an emergency vehicle approaches while you are already inside a roundabout, you should:", "choices": ["Stop immediately inside the roundabout", "Back up to the previous exit", "Move through and exit, then pull over to the right", "Drive in the center island area"], "answer": 2, "explanation": "Do not stop inside a roundabout for an emergency vehicle. Exit first, then pull over safely.", "topic": "Roundabouts", "id": "q13", "difficulty": "hard"}, {"prompt": "Oregon's basic rule law means you must drive at a speed that is:", "choices": ["Exactly the posted speed limit at all times", "Reasonable and cautious for existing conditions", "At least 5 mph below the speed limit", "The same speed as the fastest car nearby"], "answer": 1, "explanation": "The basic rule requires a speed that is reasonable and cautious for conditions.", "topic": "Speed", "id": "q14", "difficulty": "hard"}, {"prompt": "Under the basic rule law, which statement is true?", "choices": ["Driving below the speed limit can never be illegal", "You may exceed the speed limit if traffic is flowing faster", "You can violate the law even below the speed limit if conditions make your speed unsafe", "The law only applies in bad weather"], "answer": 2, "explanation": "You can still violate the basic rule even when driving below the posted limit.", "topic": "Speed", "id": "q15", "difficulty": "hard"}, {"prompt": "When entering a freeway, you should usually:", "choices": ["Slow down to merge safely", "Speed up on the on-ramp and merge with traffic", "Stop at the end of the ramp unless there is no traffic", "Turn on hazard lights before merging"], "answer": 1, "explanation": "Use the on-ramp to match speed and merge with freeway traffic.", "topic": "Freeway", "id": "q16", "difficulty": "hard"}, {"prompt": "When entering a freeway, who has the right of way?", "choices": ["Drivers entering from the ramp", "Whoever is driving faster", "Traffic already on the freeway", "Whoever signals first"], "answer": 2, "explanation": "Traffic already on the freeway has the right of way.", "topic": "Freeway", "id": "q17", "difficulty": "hard"}, {"prompt": "If you start to enter a freeway the wrong way and see DO NOT ENTER or WRONG WAY signs, you should:", "choices": ["Keep going until the next exit", "Pull off to the side of the ramp and stop", "Make a U-turn in the lane immediately", "Flash your lights and continue carefully"], "answer": 1, "explanation": "Pull off the ramp and stop if you realize you are entering the wrong way.", "topic": "Freeway", "id": "q18", "difficulty": "hard"}, {"prompt": "In Oregon, there is a crosswalk at every intersection:", "choices": ["Only where white lines are painted", "Only in school zones", "Even if it is not marked by painted lines", "Only where sidewalks exist on both sides"], "answer": 2, "explanation": "Crosswalks can be marked or unmarked; intersections generally have them even without paint.", "topic": "Pedestrians", "id": "q19", "difficulty": "hard"}, {"prompt": "You must stop and remain stopped for a pedestrian crossing in a crosswalk when the pedestrian is:", "choices": ["Only directly in front of your vehicle", "Only on your half of the street", "In your lane, in the next lane, or in the lane you are turning into", "Anywhere within sight of the intersection"], "answer": 2, "explanation": "Drivers must remain stopped for pedestrians in the conflict area described by Oregon rules.", "topic": "Pedestrians", "id": "q20", "difficulty": "hard"}, {"prompt": "Is it legal to pass a vehicle stopped at a crosswalk?", "choices": ["Yes, if you honk first", "Yes, if no pedestrian is visible", "No", "Only on a two-lane road"], "answer": 2, "explanation": "Do not pass a vehicle stopped at a crosswalk.", "topic": "Pedestrians", "id": "q21", "difficulty": "hard"}, {"prompt": "If a pedestrian is in a crosswalk on the other side of a safety island, you are:", "choices": ["Required to stop in all cases", "Not required to stop for that pedestrian", "Required to speed up and clear the crosswalk", "Required to honk before continuing"], "answer": 1, "explanation": "A pedestrian on the far side of a safety island is treated differently for stopping requirements.", "topic": "Pedestrians", "id": "q22", "difficulty": "hard"}, {"prompt": "If you are entering or leaving a driveway, parking lot, or alley and cross a sidewalk, you must:", "choices": ["Stop before the sidewalk and yield to pedestrians and bicyclists", "Use your horn and continue slowly", "Yield only to pedestrians, not bicycles", "Stop only if the sidewalk is marked"], "answer": 0, "explanation": "Stop before the sidewalk and yield to pedestrians and bicyclists.", "topic": "Pedestrians", "id": "q23", "difficulty": "hard"}, {"prompt": "What is the school speed limit in a posted school speed zone?", "choices": ["15 mph", "20 mph", "25 mph", "30 mph"], "answer": 1, "explanation": "A posted school speed zone uses a 20 mph speed limit.", "topic": "School Zones", "id": "q24", "difficulty": "hard"}, {"prompt": "A school speed zone begins at the:", "choices": ["First school building you can see", "SCHOOL SPEED LIMIT 20 sign", "First crosswalk near the school", "Point where children appear"], "answer": 1, "explanation": "The zone begins at the posted SCHOOL SPEED LIMIT 20 sign.", "topic": "School Zones", "id": "q25", "difficulty": "hard"}, {"prompt": "If a school crossing guard signals you to stop, you should remain stopped until:", "choices": ["The guard waves at you again", "The children clear the crosswalk", "The car behind you honks", "Exactly 10 seconds have passed"], "answer": 1, "explanation": "Stay stopped until the children clear the crosswalk.", "topic": "School Zones", "id": "q26", "difficulty": "hard"}, {"prompt": "On a 4-lane road with a painted median or turn lane, if a school bus is stopped with flashing red lights:", "choices": ["Traffic in all lanes must stop", "Only traffic behind the bus must stop", "No one has to stop", "Only oncoming traffic must stop"], "answer": 1, "explanation": "On that kind of divided roadway, traffic behind the bus must stop.", "topic": "School Buses", "id": "q27", "difficulty": "hard"}, {"prompt": "Work zone temporary speed limits apply:", "choices": ["Only when workers are visible", "Only at night", "At all times until signs end the zone", "Only when flaggers are present"], "answer": 2, "explanation": "Work zone speed limits apply until signs end the zone or another speed limit is posted.", "topic": "Work Zones", "id": "q28", "difficulty": "hard"}, {"prompt": "In Oregon work zones, traffic fines are:", "choices": ["Reduced by half", "Doubled", "The same as usual", "Only doubled at night"], "answer": 1, "explanation": "Traffic fines are doubled in work zones.", "topic": "Work Zones", "id": "q29", "difficulty": "hard"}, {"prompt": "If an automated flagger device in a work zone has a red light on and the stop arm is down, you should:", "choices": ["Proceed slowly", "Stop", "Use the shoulder to go around", "Follow the car ahead regardless"], "answer": 1, "explanation": "Stop when the red light is on and the stop arm is down.", "topic": "Work Zones", "id": "q30", "difficulty": "hard"}, {"prompt": "If you are required to stop at a railroad crossing and there is no stop line, you must stop at least how far from the nearest rail?", "choices": ["10 feet", "12 feet", "15 feet", "20 feet"], "answer": 2, "explanation": "Stop at least 15 feet from the nearest rail when there is no stop line.", "topic": "Railroad Crossings", "id": "q31", "difficulty": "hard"}, {"prompt": "Which is true about railroad crossings?", "choices": ["It is okay to drive around a gate if no train is visible", "Trains can stop quickly if they see you", "You should never stop on the tracks", "You should cross as soon as the first train passes"], "answer": 2, "explanation": "Never stop on railroad tracks and never drive around crossing gates.", "topic": "Railroad Crossings", "id": "q32", "difficulty": "hard"}, {"prompt": "When passing a stopped streetcar or light rail train, you should:", "choices": ["Maintain speed while passing", "Stop and stay stopped until it moves", "Watch for pedestrians and pass with caution", "Honk and continue through"], "answer": 2, "explanation": "Watch for pedestrians and pass carefully.", "topic": "Transit", "id": "q33", "difficulty": "hard"}, {"prompt": "When approaching a vehicle stopped with flashing lights on a road with two or more lanes going your direction, you must:", "choices": ["Change lanes away from it if possible or slow at least 5 mph below the posted speed limit", "Maintain your speed if you cannot move over", "Stop in your lane until it leaves", "Only move over for police cars"], "answer": 0, "explanation": "Move over if possible. If not, slow and give as much room as you safely can.", "topic": "Stopped Vehicles", "id": "q34", "difficulty": "hard"}, {"prompt": "Oregon safety belt use is mandatory for:", "choices": ["Only drivers and front-seat passengers", "Only drivers under age 18", "All drivers and passengers in all available seating positions", "Only on highways"], "answer": 2, "explanation": "Safety belts are required for all drivers and passengers in all available seating positions.", "topic": "Safety", "id": "q35", "difficulty": "standard"}, {"prompt": "How should a shoulder belt be worn?", "choices": ["Under your arm for comfort", "Behind your back if it rubs your neck", "Across your shoulder without slack", "Only when driving over 35 mph"], "answer": 2, "explanation": "Wear the shoulder belt across your shoulder and keep it snug.", "topic": "Safety", "id": "q36", "difficulty": "standard"}, {"prompt": "If a vehicle behind you is following too closely and there is a right lane, you should:", "choices": ["Brake hard to warn the driver", "Move over to the right", "Speed up far above the limit", "Stop as soon as possible in your lane"], "answer": 1, "explanation": "Move to the right when practical rather than brake-checking a tailgater.", "topic": "Safety", "id": "q37", "difficulty": "standard"}, {"prompt": "In fog, dust, smoke, or other low visibility, you should use:", "choices": ["High beams", "Parking lights only", "Low beams", "Hazard lights only"], "answer": 2, "explanation": "Use low beams in low-visibility conditions.", "topic": "Hazards", "id": "q38", "difficulty": "hard"}, {"prompt": "At night, a safe rule is to drive:", "choices": ["As fast as the posted limit allows", "Only as far as you can stop within the distance lit by your headlights", "With high beams on all the time", "In the left lane whenever possible"], "answer": 1, "explanation": "Do not overdrive your headlights.", "topic": "Hazards", "id": "q39", "difficulty": "hard"}, {"prompt": "If your blood alcohol concentration (BAC) is 0.08% or more, Oregon law presumes you are:", "choices": ["Tired", "Distracted", "Impaired", "Reckless"], "answer": 2, "explanation": "A BAC of 0.08% or more creates a presumption of impairment.", "topic": "Impaired Driving", "id": "q40", "difficulty": "hard"}, {"prompt": "Can you still be arrested for DUII if your BAC is below 0.08%?", "choices": ["No", "Only if you are under 18", "Yes", "Only after a crash"], "answer": 2, "explanation": "Yes. You can still be arrested below 0.08% if you are impaired.", "topic": "Impaired Driving", "id": "q41", "difficulty": "hard"}, {"prompt": "Under Oregon's implied consent law, by driving you agree to take a:", "choices": ["Written test after every traffic stop", "Breath, blood, or urine test when asked by a police officer", "Field sobriety test only if you caused a collision", "Vehicle inspection any time an officer asks"], "answer": 1, "explanation": "Driving in Oregon carries implied consent for breath, blood, or urine testing when lawfully requested.", "topic": "Impaired Driving", "id": "q42", "difficulty": "hard"}, {"prompt": "When you parallel park, you should be no more than how many inches from the curb?", "choices": ["12", "10", "8", "6"], "answer": 0, "explanation": "Parallel parked vehicles should be within 12 inches of the curb.", "topic": "Parking", "id": "q43", "difficulty": "hard"}, {"prompt": "What is the safest way to re-enter traffic from a parked position?", "choices": ["Yield to other traffic after you signal and check your blind spots and mirrors", "Signal, check your blind spots, and pull into traffic because others will yield", "Check all your mirrors and go without signaling", "Turn on your hazard lights and pull out slowly"], "answer": 0, "explanation": "Check mirrors and blind spots, signal, and yield before re-entering traffic.", "topic": "Parking", "id": "q44", "difficulty": "hard"}, {"prompt": "When preparing for a turn, you may:", "choices": ["Move into the bicycle lane ahead of time", "Travel in the bicycle lane for a short distance before turning", "Cross a bicycle lane when turning, but not move into it in preparation for the turn", "Ignore bicycles if you have your turn signal on"], "answer": 2, "explanation": "You may cross a bike lane to turn, but do not drive in it early to set up the turn.", "topic": "Bicycles", "id": "q45", "difficulty": "hard"}];
-const FULL_TEST_SIZE = 35;
-const QUICK_TEST_SIZE = 10;
-const HARD_TEST_SIZE = 35;
-const PASSING_SCORE_FULL = 28;
-const HISTORY_KEY = "oregon_dmv_web_history_v2";
-const STATS_KEY = "oregon_dmv_topic_stats_v2";
-const MISSED_KEY = "oregon_dmv_missed_v2";
-const screen = document.getElementById("screen");
+let questions=[
+{q:"What does a red traffic light mean?",a:["Stop","Yield","Go","Speed up"],c:0,topic:"signals"},
+{q:"What is the speed limit in a school zone?",a:["20 mph","25 mph","15 mph","30 mph"],c:0,topic:"speed"},
+{q:"Who has right of way at a 4-way stop?",a:["First to arrive","Biggest vehicle","Fastest","Right turn only"],c:0,topic:"right-of-way"},
+{q:"BAC limit for DUII in Oregon?",a:["0.08%","0.10%","0.05%","0.12%"],c:0,topic:"dui"},
+{q:"What does a yellow light mean?",a:["Slow down","Speed up","Stop always","Ignore"],c:0,topic:"signals"}
+];
 
-let state = { mode:null, topic:null, questions:[], currentIndex:0, score:0, answered:false, selected:null, missed:[] };
+let current=0,score=0,quizData=[],hard=false;
 
-function shuffle(array) {
-  const copy = [...array];
-  for (let i = copy.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [copy[i], copy[j]] = [copy[j], copy[i]];
-  }
-  return copy;
+function startQuiz(num,h=false){
+hard=h;
+quizData=[...questions].sort(()=>.5-Math.random()).slice(0,num);
+current=0;score=0;
+document.getElementById("menu").style.display="none";
+document.getElementById("quiz").style.display="block";
+showQuestion();
 }
-function getHistory() { try { return JSON.parse(localStorage.getItem(HISTORY_KEY) || "[]"); } catch { return []; } }
-function saveHistory(entry) { const h = getHistory(); h.unshift(entry); localStorage.setItem(HISTORY_KEY, JSON.stringify(h.slice(0,75))); }
-function getStats() { try { return JSON.parse(localStorage.getItem(STATS_KEY) || "{}"); } catch { return {}; } }
-function saveStats(stats) { localStorage.setItem(STATS_KEY, JSON.stringify(stats)); }
-function getMissedIds() { try { return JSON.parse(localStorage.getItem(MISSED_KEY) || "[]"); } catch { return []; } }
-function saveMissedIds(ids) { localStorage.setItem(MISSED_KEY, JSON.stringify([...new Set(ids)])); }
-function pickQuestions(size, opts = {}) {
-  let pool = QUESTION_BANK;
-  if (opts.topic) pool = pool.filter(q => q.topic === opts.topic);
-  if (opts.hardOnly) pool = pool.filter(q => q.difficulty === "hard");
-  if (opts.missedOnly) {
-    const missed = new Set(getMissedIds());
-    pool = pool.filter(q => missed.has(q.id));
-  }
-  return shuffle(pool).slice(0, Math.min(size, pool.length));
+
+function showQuestion(){
+let q=quizData[current];
+let html="<div class='card'><h2>"+q.q+"</h2>";
+q.a.forEach((opt,i)=>{
+html+=`<button onclick="answer(${i})">${opt}</button><br>`;
+});
+html+="</div>";
+document.getElementById("quiz").innerHTML=html;
 }
-function resetQuiz(questions, mode, topic = null) {
-  if (!questions.length) return renderEmptyState(mode);
-  state = { mode, topic, questions, currentIndex:0, score:0, answered:false, selected:null, missed:[] };
-  renderQuestion();
+
+function answer(i){
+if(i===quizData[current].c)score++;
+current++;
+if(current<quizData.length)showQuestion();
+else finish();
 }
-function renderEmptyState(mode) {
-  const message = mode === "missed" ? "No missed questions saved yet. Miss a few questions first, then come back here." : "No questions available for that mode yet.";
-  screen.innerHTML = `
-    <section class="card center">
-      <h2>Nothing to show yet</h2>
-      <p class="muted">${message}</p>
-      <div class="row" style="margin-top:12px"><button onclick="renderHome()">Main Menu</button></div>
-    </section>`;
+
+function finish(){
+let pass=score>=28;
+let html=`<div class='card'><h2>Score: ${score}/${quizData.length}</h2>`;
+if(quizData.length===35){
+html+=pass?"<h3 style='color:lime'>PASS</h3>":"<h3 style='color:red'>FAIL</h3>";
 }
-function renderHome() {
-  const missedCount = getMissedIds().length;
-  const topicCount = Object.keys(getStats()).length;
-  screen.innerHTML = `
-    <section class="card">
-      <div class="menu-grid">
-        <button onclick="startQuick()">Quick Practice<br><span class="muted">10 random questions</span></button>
-        <button onclick="startFull()">Full DMV Style Test<br><span class="muted">35 questions • pass at 28</span></button>
-        <button class="secondary" onclick="startHard()">Hard Mode<br><span class="muted">35 tougher rule-focused questions</span></button>
-        <button class="secondary" onclick="renderTopics()">Topic Drill<br><span class="muted">Practice one category at a time</span></button>
-        <button class="ghost" onclick="startMissedOnly()">Missed Questions Only<br><span class="muted">${missedCount} saved for review</span></button>
-        <button class="ghost" onclick="renderProgress()">Topic Progress<br><span class="muted">${topicCount} topics tracked</span></button>
-        <button class="ghost" onclick="renderHistory()">Score History</button>
-      </div>
-    </section>
-    <section class="card">
-      <h2>Best way to use it on iPhone</h2>
-      <p>Open this file in Safari, then tap <strong>Share → Add to Home Screen</strong>.</p>
-      <p class="footer-note muted">Everything saves locally on this device, including score history, topic progress, and missed-question review.</p>
-    </section>`;
+html+="<button onclick='location.reload()'>Restart</button></div>";
+document.getElementById("quiz").innerHTML=html;
+
+saveStats(score,quizData.length);
 }
-function startQuick() { resetQuiz(pickQuestions(QUICK_TEST_SIZE), "quick"); }
-function startFull() { resetQuiz(pickQuestions(FULL_TEST_SIZE), "full"); }
-function startHard() { resetQuiz(pickQuestions(HARD_TEST_SIZE, {hardOnly:true}), "hard"); }
-function startMissedOnly() { resetQuiz(pickQuestions(FULL_TEST_SIZE, {missedOnly:true}), "missed"); }
-function renderTopics() {
-  screen.innerHTML = `<section class="card"><h2>Choose a topic</h2><div class="topic-grid" id="topic-grid"></div><div class="row" style="margin-top:12px"><button class="ghost" onclick="renderHome()">Back</button></div></section>`;
-  const grid = document.getElementById("topic-grid");
-  [...new Set(QUESTION_BANK.map(q => q.topic))].sort().forEach(topic => {
-    const btn = document.createElement("button");
-    btn.className = "secondary";
-    btn.textContent = topic;
-    btn.onclick = () => startTopic(topic);
-    grid.appendChild(btn);
-  });
+
+function saveStats(s,total){
+let data=JSON.parse(localStorage.getItem("stats")||"[]");
+data.push({score:s,total:total});
+localStorage.setItem("stats",JSON.stringify(data));
 }
-function startTopic(topic) { resetQuiz(pickQuestions(10, {topic}), "topic", topic); }
-function getSignGraphic(question) {
-  const p = question.prompt.toLowerCase();
-  if (p.includes("stop sign")) return `<svg class="sign" viewBox="0 0 220 220"><polygon points="65,10 155,10 210,65 210,155 155,210 65,210 10,155 10,65" fill="#c81f25" stroke="#fff" stroke-width="10"/><text x="110" y="128" font-size="52" text-anchor="middle" fill="white" font-weight="800" font-family="Arial, sans-serif">STOP</text></svg>`;
-  if (p.includes("yield")) return `<svg class="sign" viewBox="0 0 220 220"><polygon points="110,25 200,180 20,180" fill="white" stroke="#c81f25" stroke-width="12"/><text x="110" y="145" font-size="34" text-anchor="middle" fill="#c81f25" font-weight="800" font-family="Arial, sans-serif">YIELD</text></svg>`;
-  if (p.includes("do not enter") || p.includes("wrong way")) return `<svg class="sign" viewBox="0 0 220 220"><circle cx="110" cy="110" r="86" fill="#c81f25"/><rect x="45" y="95" width="130" height="30" rx="6" fill="white"/></svg>`;
-  if (p.includes("warning sign")) return `<svg class="sign" viewBox="0 0 220 220"><g transform="translate(110,110) rotate(45) translate(-110,-110)"><rect x="45" y="45" width="130" height="130" fill="#ffd84d" stroke="#333" stroke-width="8" rx="6"/></g><text x="110" y="124" font-size="54" text-anchor="middle" fill="#333" font-weight="800" font-family="Arial, sans-serif">!</text></svg>`;
-  if (p.includes("five-sided yellow sign") || question.topic === "School Zones") return `<svg class="sign" viewBox="0 0 220 220"><polygon points="110,22 188,74 158,190 62,190 32,74" fill="#ffe14d" stroke="#333" stroke-width="8"/><text x="110" y="105" font-size="24" text-anchor="middle" fill="#333" font-weight="800" font-family="Arial, sans-serif">SCHOOL</text><circle cx="92" cy="128" r="10" fill="#333"/><circle cx="128" cy="128" r="10" fill="#333"/><path d="M92 138 L82 162 M92 146 L102 162 M128 138 L118 162 M128 146 L138 162 M92 144 L128 138" stroke="#333" stroke-width="6" fill="none" stroke-linecap="round"/></svg>`;
-  if (question.topic === "Railroad Crossings") return `<svg class="sign" viewBox="0 0 220 220"><line x1="55" y1="55" x2="165" y2="165" stroke="#fff" stroke-width="26" /><line x1="165" y1="55" x2="55" y2="165" stroke="#fff" stroke-width="26" /><line x1="55" y1="55" x2="165" y2="165" stroke="#333" stroke-width="4" /><line x1="165" y1="55" x2="55" y2="165" stroke="#333" stroke-width="4" /><text x="110" y="44" font-size="22" text-anchor="middle" fill="#333" font-weight="700" font-family="Arial, sans-serif">RAIL</text><text x="110" y="205" font-size="22" text-anchor="middle" fill="#333" font-weight="700" font-family="Arial, sans-serif">ROAD</text></svg>`;
-  if (question.topic === "Signals") return `<svg class="sign" viewBox="0 0 220 220"><rect x="70" y="28" width="80" height="164" rx="18" fill="#253243"/><circle cx="110" cy="66" r="18" fill="#ff4d4f"/><circle cx="110" cy="110" r="18" fill="#ffd84d"/><circle cx="110" cy="154" r="18" fill="#37c871"/></svg>`;
-  return "";
+
+function showStats(){
+document.getElementById("menu").style.display="none";
+document.getElementById("stats").style.display="block";
+let data=JSON.parse(localStorage.getItem("stats")||"[]");
+let html="<div class='card'><h2>Progress</h2>";
+if(data.length===0)html+="No data yet";
+else{
+let avg=data.reduce((a,b)=>a+b.score,0)/data.length;
+html+=`<p>Tests taken: ${data.length}</p>`;
+html+=`<p>Average score: ${avg.toFixed(1)}</p>`;
 }
-function renderQuestion() {
-  const q = state.questions[state.currentIndex];
-  const total = state.questions.length;
-  const difficultyBadge = (state.mode === "hard" || q.difficulty === "hard") ? '<span class="badge">Hard</span>' : '';
-  const graphic = getSignGraphic(q);
-  screen.innerHTML = `
-    <section class="card">
-      <div class="progress"><span>Question ${state.currentIndex + 1} of ${total}</span><span>Score: ${state.score}</span></div>
-      <div>${difficultyBadge}<span class="badge">${q.topic}</span></div>
-      ${graphic ? `<div class="sign-box">${graphic}</div>` : ""}
-      <div class="question">${q.prompt}</div>
-      <div class="list" id="choices"></div>
-      <div id="feedback"></div>
-      <div class="row" style="margin-top:14px"><button class="ghost" onclick="renderHome()">Quit</button></div>
-    </section>`;
-  const choices = document.getElementById("choices");
-  q.choices.forEach((choice, index) => {
-    const btn = document.createElement("button");
-    btn.className = "choice";
-    btn.textContent = `${String.fromCharCode(65 + index)}. ${choice}`;
-    btn.onclick = () => answerQuestion(index);
-    choices.appendChild(btn);
-  });
+html+="<button onclick='location.reload()'>Back</button></div>";
+document.getElementById("stats").innerHTML=html;
 }
-function answerQuestion(selectedIndex) {
-  if (state.answered) return;
-  state.answered = true;
-  const q = state.questions[state.currentIndex];
-  const correct = selectedIndex === q.answer;
-  [...document.querySelectorAll(".choice")].forEach((btn, index) => {
-    btn.disabled = true;
-    if (index === q.answer) btn.classList.add("correct");
-    if (index === selectedIndex && index !== q.answer) btn.classList.add("incorrect");
-  });
-  const stats = getStats();
-  if (!stats[q.topic]) stats[q.topic] = {attempted:0, correct:0};
-  stats[q.topic].attempted += 1;
-  if (correct) {
-    state.score += 1;
-    stats[q.topic].correct += 1;
-  } else {
-    state.missed.push({id:q.id, prompt:q.prompt, topic:q.topic, correctAnswer:q.choices[q.answer], explanation:q.explanation});
-    const missed = new Set(getMissedIds()); missed.add(q.id); saveMissedIds([...missed]);
-  }
-  saveStats(stats);
-  document.getElementById("feedback").innerHTML = `
-    <div class="explanation ${correct ? "good" : "bad"}">
-      <strong>${correct ? "Correct" : "Not quite"}</strong>
-      <p>${q.explanation}</p>
-      <p><strong>Right answer:</strong> ${q.choices[q.answer]}</p>
-    </div>
-    <div class="row" style="margin-top:14px"><button onclick="nextQuestion()">${state.currentIndex + 1 < state.questions.length ? "Next Question" : "See Results"}</button></div>`;
-}
-function nextQuestion() {
-  state.currentIndex += 1;
-  state.answered = false;
-  if (state.currentIndex >= state.questions.length) return finishQuiz();
-  renderQuestion();
-}
-function finishQuiz() {
-  const total = state.questions.length;
-  const passed = ["full","hard","missed"].includes(state.mode) ? state.score >= PASSING_SCORE_FULL : null;
-  saveHistory({date:new Date().toLocaleString(), mode:state.mode, topic:state.topic, score:state.score, total});
-  if (state.mode === "missed") {
-    const missedSet = new Set(getMissedIds());
-    state.questions.forEach(q => { if (!state.missed.find(m => m.id === q.id)) missedSet.delete(q.id); });
-    saveMissedIds([...missedSet]);
-  }
-  let headline = "";
-  if (state.mode === "full") headline = passed ? `You passed with ${state.score}/${total}.` : `You scored ${state.score}/${total}. Oregon-style target is ${PASSING_SCORE_FULL}/${FULL_TEST_SIZE}.`;
-  else if (state.mode === "hard") headline = passed ? `Nice job — you passed hard mode with ${state.score}/${total}.` : `You scored ${state.score}/${total} in hard mode.`;
-  else if (state.mode === "topic") headline = `You got ${state.score} out of ${total} in ${state.topic}.`;
-  else if (state.mode === "missed") headline = `You got ${state.score} out of ${total} in missed-question review.`;
-  else headline = `You got ${state.score} out of ${total}.`;
-  screen.innerHTML = `<section class="card center"><h2>Results</h2><p class="score">${headline}</p><div class="row" style="margin-top:12px"><button onclick="renderHome()">Main Menu</button><button class="secondary" onclick="retryMode()">Try Again</button></div></section><section class="card"><h3>Missed Questions</h3><div class="list" id="missed-list"></div></section>`;
-  const missedList = document.getElementById("missed-list");
-  if (!state.missed.length) missedList.innerHTML = `<div class="list-item">Nice work — no missed questions this round.</div>`;
-  else state.missed.forEach(item => {
-    const div = document.createElement("div");
-    div.className = "list-item";
-    div.innerHTML = `<div><span class="badge">${item.topic}</span></div><div><strong>${item.prompt}</strong></div><div style="margin-top:6px"><strong>Correct answer:</strong> ${item.correctAnswer}</div><div class="muted" style="margin-top:6px">${item.explanation}</div>`;
-    missedList.appendChild(div);
-  });
-}
-function retryMode() {
-  if (state.mode === "full") return startFull();
-  if (state.mode === "quick") return startQuick();
-  if (state.mode === "hard") return startHard();
-  if (state.mode === "missed") return startMissedOnly();
-  if (state.mode === "topic" && state.topic) return startTopic(state.topic);
-  renderHome();
-}
-function renderHistory() {
-  const history = getHistory();
-  screen.innerHTML = `<section class="card"><h2>Score History</h2><div id="history-list" class="list"></div><div class="row" style="margin-top:14px"><button class="ghost" onclick="clearHistory()">Clear History</button><button onclick="renderHome()">Back</button></div></section>`;
-  const list = document.getElementById("history-list");
-  if (!history.length) return list.innerHTML = `<div class="list-item">No saved scores yet.</div>`;
-  history.forEach(item => {
-    const label = item.mode === "topic" ? `Topic Drill • ${item.topic}` : item.mode === "full" ? "Full DMV Style Test" : item.mode === "hard" ? "Hard Mode" : item.mode === "missed" ? "Missed Questions Only" : "Quick Practice";
-    const div = document.createElement("div");
-    div.className = "list-item";
-    div.innerHTML = `<strong>${label}</strong><br><span class="muted">${item.date}</span><br><span>Score: ${item.score} / ${item.total}</span>`;
-    list.appendChild(div);
-  });
-}
-function clearHistory() { localStorage.removeItem(HISTORY_KEY); renderHistory(); }
-function renderProgress() {
-  const stats = getStats();
-  screen.innerHTML = `<section class="card"><h2>Topic Progress</h2><div id="stats-grid" class="stats-grid"></div><div class="row" style="margin-top:14px"><button class="ghost" onclick="clearProgress()">Reset Topic Progress</button><button onclick="renderHome()">Back</button></div></section>`;
-  const grid = document.getElementById("stats-grid");
-  [...new Set(QUESTION_BANK.map(q => q.topic))].sort().forEach(topic => {
-    const s = stats[topic] || {attempted:0, correct:0};
-    const pct = s.attempted ? Math.round((s.correct / s.attempted) * 100) : 0;
-    const box = document.createElement("div");
-    box.className = "kpi";
-    box.innerHTML = `<strong>${pct}%</strong><div>${topic}</div><div class="muted">${s.correct} correct out of ${s.attempted} attempted</div><div style="margin-top:10px"><button class="secondary">Practice</button></div>`;
-    box.querySelector("button").onclick = () => startTopic(topic);
-    grid.appendChild(box);
-  });
-}
-function clearProgress() { localStorage.removeItem(STATS_KEY); renderProgress(); }
-renderHome();
 </script>
 </body>
 </html>
