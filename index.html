@@ -1,100 +1,528 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Oregon DMV Practice</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Oregon DMV Practice App</title>
 <style>
-body{font-family:Arial;margin:0;background:#111;color:#fff;text-align:center}
-.container{padding:20px}
-button{padding:15px;margin:10px;font-size:18px;border:none;border-radius:8px;background:#0a84ff;color:white}
-.card{background:#1c1c1e;padding:20px;border-radius:12px;margin-top:20px}
+:root{
+  --bg:#0f172a; --card:#111827; --muted:#94a3b8; --text:#e5e7eb; --accent:#2563eb;
+  --good:#15803d; --bad:#b91c1c; --warn:#b45309; --chip:#1f2937;
+}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:linear-gradient(180deg,#0b1220,#111827);color:var(--text)}
+header{padding:18px 16px;border-bottom:1px solid #23304a;background:rgba(15,23,42,.85);position:sticky;top:0;backdrop-filter: blur(8px);z-index:2}
+h1{margin:0;font-size:1.35rem}
+.wrap{max-width:980px;margin:0 auto;padding:16px}
+.card{background:rgba(17,24,39,.96);border:1px solid #253149;border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);margin-bottom:16px}
+.grid{display:grid;gap:12px}
+.grid.two{grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+button,.btn{border:none;border-radius:12px;padding:14px 16px;font-size:1rem;background:var(--accent);color:white;font-weight:600}
+button.secondary{background:#334155}
+button.good{background:var(--good)}
+button.warn{background:var(--warn)}
+button.bad{background:var(--bad)}
+button.ghost{background:#1f2937}
+button:disabled{opacity:.55}
+.options{display:grid;gap:10px;margin-top:12px}
+.option{width:100%;text-align:left;background:#1f2937}
+.option.correct{outline:2px solid #22c55e;background:#133321}
+.option.wrong{outline:2px solid #ef4444;background:#3b1515}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.small{font-size:.92rem;color:var(--muted)}
+.big{font-size:1.1rem}
+.kpi{background:#0b1220;border:1px solid #243247;border-radius:14px;padding:14px}
+.kpi .n{font-size:1.55rem;font-weight:800}
+.progress{height:10px;background:#1f2937;border-radius:999px;overflow:hidden}
+.progress > div{height:100%;background:#3b82f6}
+.hidden{display:none !important}
+hr{border:0;border-top:1px solid #263246;margin:16px 0}
+.badge{display:inline-block;padding:6px 10px;border-radius:999px;background:var(--chip);font-size:.85rem;color:#cbd5e1}
+.topic-bar{display:grid;grid-template-columns:130px 1fr 64px;gap:10px;align-items:center;margin:8px 0}
+.signbox{display:flex;align-items:center;justify-content:center;height:110px;border-radius:16px;background:#0b1220;border:1px dashed #41536f;font-weight:800;font-size:1.2rem;letter-spacing:.5px;margin-bottom:10px;padding:12px;text-align:center}
+.sign-stop{background:#7f1d1d;color:#fff;border:4px solid #fff;clip-path:polygon(30% 0,70% 0,100% 30%,100% 70%,70% 100%,30% 100%,0 70%,0 30%)}
+.sign-yield{background:#fff;color:#b91c1c;border:6px solid #b91c1c;clip-path:polygon(50% 100%,0 0,100% 0)}
+.sign-rr{background:#f8fafc;color:#111827;border:4px solid #111827;transform:rotate(45deg)}
+.sign-school{background:#facc15;color:#111827;border:4px solid #111827;clip-path:polygon(20% 0,80% 0,100% 50%,80% 100%,20% 100%,0 50%)}
+.sign-warning{background:#facc15;color:#111827;border:4px solid #111827;clip-path:polygon(50% 0,100% 50%,50% 100%,0 50%)}
+.sign-speed{background:#fff;color:#111827;border:4px solid #111827}
+.sign-no{background:#fff;color:#111827;border:4px solid #b91c1c;position:relative}
+.sign-no:after{content:"";position:absolute;left:10%;right:10%;top:48%;height:8px;background:#b91c1c;transform:rotate(-30deg)}
+.footer-note{font-size:.82rem;color:#9ca3af}
+code{background:#0b1220;padding:2px 5px;border-radius:6px}
 </style>
 </head>
 <body>
-<div class="container">
-<h1>Oregon DMV Practice</h1>
+<header>
+  <div class="wrap">
+    <h1>Oregon DMV Practice App</h1>
+    <div class="small">Single-file version for GitHub Pages and iPhone</div>
+  </div>
+</header>
+<div class="wrap">
+  <section id="home" class="card">
+    <div class="row" style="justify-content:space-between">
+      <div>
+        <div class="badge">Teen-focused</div>
+        <div class="badge">Offline-friendly</div>
+        <div class="badge">Single file</div>
+      </div>
+      <div id="streak" class="small"></div>
+    </div>
+    <h2>Choose a mode</h2>
+    <div class="grid two">
+      <button onclick="startMode('quick')">Quick Practice<br><span class="small">10 questions</span></button>
+      <button onclick="startMode('full')">Full DMV-Style Test<br><span class="small">35 questions</span></button>
+      <button class="warn" onclick="startMode('timed')">Timed Test<br><span class="small">35 questions / 35 minutes</span></button>
+      <button class="bad" onclick="startMode('hard')">Hard Mode<br><span class="small">15 tougher questions</span></button>
+      <button class="secondary" onclick="showTopicPicker()">Topic Drill<br><span class="small">Focus by category</span></button>
+      <button class="ghost" onclick="startMissedOnly()">Missed Questions Only<br><span class="small">Adaptive review</span></button>
+    </div>
+    <hr>
+    <div class="grid two">
+      <button class="secondary" onclick="showDashboard()">Progress Dashboard</button>
+      <button class="secondary" onclick="resetProgress()">Reset Saved Progress</button>
+    </div>
+    <p class="footer-note">Tip: after publishing to GitHub Pages, open it in Safari and use <b>Add to Home Screen</b>.</p>
+  </section>
 
-<div id="menu">
-<button onclick="startQuiz(10)">Quick Practice</button>
-<button onclick="startQuiz(35)">Full Test</button>
-<button onclick="startQuiz(20,true)">Hard Mode</button>
-<button onclick="showStats()">Progress</button>
-</div>
+  <section id="topicPicker" class="card hidden">
+    <h2>Choose a topic</h2>
+    <div id="topicButtons" class="grid two"></div>
+    <div class="row"><button class="secondary" onclick="goHome()">Back</button></div>
+  </section>
 
-<div id="quiz" style="display:none"></div>
-<div id="stats" style="display:none"></div>
+  <section id="quiz" class="card hidden">
+    <div class="row" style="justify-content:space-between">
+      <div>
+        <div id="modeTitle" class="badge"></div>
+        <div class="small"><span id="qNum"></span> · <span id="topicLabel"></span></div>
+      </div>
+      <div style="text-align:right">
+        <div id="timer" class="big"></div>
+        <div class="small">Score: <span id="scoreNow">0</span></div>
+      </div>
+    </div>
+    <div class="progress" style="margin-top:12px"><div id="overallBar" style="width:0%"></div></div>
+    <div id="signContainer" class="hidden" style="margin-top:16px"></div>
+    <h2 id="questionText" style="margin-top:16px"></h2>
+    <div id="options" class="options"></div>
+    <div id="feedback" class="hidden card" style="margin-top:12px;background:#0b1220"></div>
+    <div class="row" style="margin-top:12px">
+      <button id="nextBtn" class="good hidden" onclick="nextQuestion()">Next</button>
+      <button class="secondary" onclick="quitQuiz()">Quit</button>
+    </div>
+  </section>
 
+  <section id="results" class="card hidden">
+    <h2>Results</h2>
+    <div id="resultsBody"></div>
+    <div class="row">
+      <button onclick="goHome()">Home</button>
+      <button class="secondary" onclick="reviewLastQuiz()">Review Last Quiz</button>
+      <button class="ghost" onclick="startMissedOnly()">Practice Missed Questions</button>
+    </div>
+  </section>
+
+  <section id="review" class="card hidden">
+    <h2>Last Quiz Review</h2>
+    <div id="reviewBody"></div>
+    <div class="row"><button class="secondary" onclick="goHome()">Back Home</button></div>
+  </section>
+
+  <section id="dashboard" class="card hidden">
+    <h2>Progress Dashboard</h2>
+    <div id="dashboardBody"></div>
+    <div class="row"><button class="secondary" onclick="goHome()">Back</button></div>
+  </section>
 </div>
 
 <script>
-let questions=[
-{q:"What does a red traffic light mean?",a:["Stop","Yield","Go","Speed up"],c:0,topic:"signals"},
-{q:"What is the speed limit in a school zone?",a:["20 mph","25 mph","15 mph","30 mph"],c:0,topic:"speed"},
-{q:"Who has right of way at a 4-way stop?",a:["First to arrive","Biggest vehicle","Fastest","Right turn only"],c:0,topic:"right-of-way"},
-{q:"BAC limit for DUII in Oregon?",a:["0.08%","0.10%","0.05%","0.12%"],c:0,topic:"dui"},
-{q:"What does a yellow light mean?",a:["Slow down","Speed up","Stop always","Ignore"],c:0,topic:"signals"}
+const QUESTIONS = [
+  // SIGNS
+  {id:'s1',topic:'Signs',difficulty:'easy',sign:'STOP',signType:'stop',q:'What must you do at a stop sign?',choices:['Slow down and proceed if clear','Come to a complete stop','Stop only if other cars are present','Honk and continue'],answer:1,explain:'A stop sign requires a complete stop before the stop line, crosswalk, or intersection.'},
+  {id:'s2',topic:'Signs',difficulty:'easy',sign:'YIELD',signType:'yield',q:'A yield sign means you must:',choices:['Always stop before entering','Slow down and be ready to give the right of way','Speed up to merge ahead of traffic','Ignore pedestrians if you are turning'],answer:1,explain:'Yield means slow down and give the right of way when needed.'},
+  {id:'s3',topic:'Signs',difficulty:'easy',sign:'SPEED LIMIT 25',signType:'speed',q:'A speed limit sign shows:',choices:['The recommended speed in all weather','The maximum lawful speed under ideal conditions','A speed you may exceed while passing','The minimum speed on that road'],answer:1,explain:'Posted limits are the maximum lawful speed under ideal conditions. You may need to go slower.'},
+  {id:'s4',topic:'Signs',difficulty:'medium',sign:'RAILROAD CROSSING',signType:'rr',q:'A round yellow sign with a black X and two Rs warns of:',choices:['A school zone ahead','A railroad crossing ahead','A no-passing zone','A work zone detour'],answer:1,explain:'The round railroad warning sign alerts you to tracks ahead.'},
+  {id:'s5',topic:'Signs',difficulty:'medium',sign:'SCHOOL',signType:'school',q:'A pentagon-shaped sign usually means:',choices:['No passing zone','School or school crossing area','Railroad crossing','Yield ahead'],answer:1,explain:'Pentagon signs are used for school and school crossing warnings.'},
+  {id:'s6',topic:'Signs',difficulty:'hard',sign:'NO U-TURN',signType:'no',q:'A sign showing a curved arrow with a red slash means:',choices:['U-turn permitted with caution','No U-turn','Turn left only','Road curves left'],answer:1,explain:'A red-slash symbol means the movement shown is prohibited.'},
+  {id:'s7',topic:'Signs',difficulty:'hard',sign:'MERGE',signType:'warning',q:'A yellow diamond sign is generally used for:',choices:['Regulations and laws','Route numbers','Warnings and hazards','Services and recreation'],answer:2,explain:'Yellow diamond signs generally warn about hazards or changing road conditions.'},
+  {id:'s8',topic:'Signs',difficulty:'medium',sign:'WRONG WAY',signType:'warning',q:'If you see a WRONG WAY sign, you should:',choices:['Back up immediately if safe','Turn around or stop and get off the road safely','Continue to the next exit','Drive on the shoulder'],answer:1,explain:'Wrong Way means you are heading against traffic and must correct it safely.'},
+  {id:'s9',topic:'Signs',difficulty:'medium',sign:'DO NOT ENTER',signType:'no',q:'A DO NOT ENTER sign means:',choices:['No parking on that block','Traffic is not allowed to enter from that direction','Road closed only at night','Pedestrians only'],answer:1,explain:'Do Not Enter means you must not enter from that direction.'},
+  {id:'s10',topic:'Signs',difficulty:'hard',sign:'LANE ENDS',signType:'warning',q:'When a warning sign shows that your lane ends ahead, you should:',choices:['Speed up to stay ahead of traffic','Merge early when safe','Stop in your lane and wait','Move onto the shoulder'],answer:1,explain:'Merge early and smoothly when a lane ends.'},
+
+  // SIGNALS & LIGHTS
+  {id:'t1',topic:'Signals & Lights',difficulty:'easy',q:'A steady red traffic light means:',choices:['Stop until the light changes and the way is clear','Proceed with caution','Only yield to traffic','Speed up to clear the intersection'],answer:0,explain:'A steady red light requires you to stop.'},
+  {id:'t2',topic:'Signals & Lights',difficulty:'easy',q:'A steady yellow light means:',choices:['The light is about to turn red','You may speed up if close','Stop only for pedestrians','Traffic in all directions must stop'],answer:0,explain:'Yellow warns that the signal is about to change to red.'},
+  {id:'t3',topic:'Signals & Lights',difficulty:'easy',q:'A flashing red signal should be treated like:',choices:['A yield sign','A stop sign','A railroad signal','A school zone light'],answer:1,explain:'Flashing red means stop, then proceed when safe.'},
+  {id:'t4',topic:'Signals & Lights',difficulty:'medium',q:'A flashing yellow signal means:',choices:['Stop before entering','Proceed with caution','Pedestrians have a green light','Road closed ahead'],answer:1,explain:'Flashing yellow means slow down and proceed carefully.'},
+  {id:'t5',topic:'Signals & Lights',difficulty:'medium',q:'A green arrow means:',choices:['You may turn in the direction of the arrow after yielding to any lawful users still in the intersection','You have the right of way no matter what','Pedestrians may not cross','You must turn'],answer:0,explain:'A green arrow gives a protected movement, but you still must watch for people lawfully in the roadway.'},
+  {id:'t6',topic:'Signals & Lights',difficulty:'hard',q:'Before turning right on red, you must:',choices:['Honk to alert pedestrians','Come to a complete stop and yield to traffic and pedestrians','Only slow down if the lane is clear','Turn quickly before cross traffic moves'],answer:1,explain:'Right on red requires a full stop and yielding unless prohibited by a sign.'},
+  {id:'t7',topic:'Signals & Lights',difficulty:'hard',q:'If a traffic signal is dark because of a power outage, you should:',choices:['Treat the intersection like a four-way stop when appropriate','Proceed because signals are not controlling traffic','Follow the car ahead without stopping','Use your hazard lights and go through'],answer:0,explain:'A dark signal is generally treated like a stop-controlled intersection.'},
+  {id:'t8',topic:'Signals & Lights',difficulty:'medium',q:'When must headlights be used?',choices:['Only on rural roads','From sunset to sunrise and when visibility is limited','Only when it is raining hard','Only if you are driving over 55 mph'],answer:1,explain:'Headlights are required at night and when visibility is poor.'},
+
+  // RIGHT OF WAY / INTERSECTIONS
+  {id:'r1',topic:'Right of Way',difficulty:'easy',q:'At a four-way stop, which driver should go first?',choices:['The driver on the left','The first driver to stop','The fastest driver','The largest vehicle'],answer:1,explain:'At a four-way stop, the first vehicle to stop should go first.'},
+  {id:'r2',topic:'Right of Way',difficulty:'easy',q:'When two vehicles reach an uncontrolled intersection at about the same time, the driver on the left should:',choices:['Speed up','Yield to the driver on the right','Honk and continue','Turn left first'],answer:1,explain:'Yield to the vehicle on the right at the same-time arrival.'},
+  {id:'r3',topic:'Right of Way',difficulty:'medium',q:'Before turning left at an intersection, you must yield to:',choices:['Only pedestrians','Oncoming traffic and pedestrians','Vehicles behind you only','No one if you signaled'],answer:1,explain:'Left turns must yield to oncoming traffic and pedestrians.'},
+  {id:'r4',topic:'Right of Way',difficulty:'medium',q:'Pedestrians using a crosswalk should generally be given:',choices:['A warning honk','The right of way','Only half the roadway','Room only if they signal'],answer:1,explain:'Drivers must stop and remain stopped for pedestrians in crosswalks as required.'},
+  {id:'r5',topic:'Right of Way',difficulty:'hard',q:'If an emergency vehicle with lights and siren approaches, you should:',choices:['Stop where you are in the lane','Pull over to the right edge and stop','Race to the nearest intersection first','Turn on high beams'],answer:1,explain:'Move to the right edge and stop until the emergency vehicle passes, unless directed otherwise.'},
+  {id:'r6',topic:'Right of Way',difficulty:'hard',q:'When entering a road from an alley, driveway, or private road, you must:',choices:['Yield to vehicles, bicycles, and pedestrians already there','Take the right of way if you signal','Only yield to larger vehicles','Stop only if the road has two lanes'],answer:0,explain:'Drivers entering from private access points must yield to road users already on the roadway or sidewalk.'},
+  {id:'r7',topic:'Right of Way',difficulty:'medium',q:'If a funeral procession is lawfully using the roadway, other drivers should:',choices:['Cut through if there is a gap','Yield as required and do not disrupt it','Pass on the shoulder','Ignore lead vehicles'],answer:1,explain:'You should not interfere with a funeral procession and should yield as required.'},
+  {id:'r8',topic:'Right of Way',difficulty:'hard',q:'At a T-intersection where you must stop, traffic on the through road usually has:',choices:['No priority','The right of way','To stop for you','To turn on headlights'],answer:1,explain:'Traffic on the through road usually has priority over traffic entering from the terminating road.'},
+
+  // SPEED
+  {id:'sp1',topic:'Speed',difficulty:'easy',q:'Posted speed limits are based on:',choices:['Ideal conditions','Any weather conditions','Your car type','How late you are'],answer:0,explain:'Posted limits assume ideal conditions; you must slow when conditions are worse.'},
+  {id:'sp2',topic:'Speed',difficulty:'easy',q:'You must drive slower than the posted speed when:',choices:['Road, weather, light, or traffic conditions make it unsafe','You are on a familiar road','There are no other cars','You are late'],answer:0,explain:'Basic speed law requires a speed that is reasonable and prudent for conditions.'},
+  {id:'sp3',topic:'Speed',difficulty:'medium',q:'In many Oregon school zones, the speed limit is:',choices:['15 mph','20 mph','25 mph','30 mph'],answer:1,explain:'School zones are commonly posted 20 mph when conditions requiring it are present.'},
+  {id:'sp4',topic:'Speed',difficulty:'medium',q:'Work zones require drivers to:',choices:['Ignore normal fines','Slow down and obey posted instructions','Pass slow vehicles aggressively','Drive at normal highway speed'],answer:1,explain:'Work zones require extra caution and obedience to signs and workers.'},
+  {id:'sp5',topic:'Speed',difficulty:'hard',q:'Driving too slowly can be dangerous because it may:',choices:['Improve fuel economy too much','Block traffic and create conflicts','Always be illegal','Reduce tire wear'],answer:1,explain:'Unreasonably slow driving can disrupt traffic and create hazards.'},
+  {id:'sp6',topic:'Speed',difficulty:'hard',q:'On a wet or icy road, your stopping distance is likely to:',choices:['Stay the same','Increase','Shrink','Depend only on engine size'],answer:1,explain:'Reduced traction increases stopping distance.'},
+  {id:'sp7',topic:'Speed',difficulty:'medium',q:'The basic speed law means you should:',choices:['Always drive exactly the posted limit','Drive no faster than is safe for conditions','Match the speed of the fastest driver','Ignore weather if your vehicle has AWD'],answer:1,explain:'A safe, reasonable speed depends on actual conditions.'},
+
+  // LANE USE / PASSING
+  {id:'l1',topic:'Lane Use',difficulty:'easy',q:'Before changing lanes, you should:',choices:['Check mirrors, signal, and check blind spots','Only look in the rearview mirror','Honk and move over','Speed up without signaling'],answer:0,explain:'Safe lane changes require mirrors, signal, and blind-spot check.'},
+  {id:'l2',topic:'Lane Use',difficulty:'easy',q:'A broken yellow center line means:',choices:['Passing is allowed when safe','Passing is never allowed','Traffic flows one way only','The road is closed ahead'],answer:0,explain:'Broken yellow lines generally mean passing is permitted when safe.'},
+  {id:'l3',topic:'Lane Use',difficulty:'medium',q:'Double solid yellow center lines mean:',choices:['Passing is allowed from either side','Passing is not allowed','Only trucks may pass','The lane is reversible'],answer:1,explain:'Double solid yellow lines prohibit passing across them.'},
+  {id:'l4',topic:'Lane Use',difficulty:'medium',q:'You should not pass when:',choices:['Approaching a hill or curve where you cannot see clearly ahead','The road is straight','You are on a multi-lane road','You are passing a bicycle with space'],answer:0,explain:'Limited sight distance makes passing unsafe.'},
+  {id:'l5',topic:'Lane Use',difficulty:'hard',q:'When passing a bicyclist in Oregon, you should leave enough space and:',choices:['Squeeze by if there is no oncoming traffic','Only honk loudly','Pass only when it is safe and legal','Force them onto the shoulder'],answer:2,explain:'Pass bicyclists only when safe and legal, with adequate clearance.'},
+  {id:'l6',topic:'Lane Use',difficulty:'hard',q:'A center left-turn lane is used for:',choices:['Passing slower vehicles','Starting or finishing a left turn','Parking during business hours','Driving around traffic jams'],answer:1,explain:'The center lane is for left turns, not for travel or passing.'},
+  {id:'l7',topic:'Lane Use',difficulty:'medium',q:'If you miss your exit on a freeway, you should:',choices:['Back up carefully on the shoulder','Go to the next exit','Stop and wait for help','Make a U-turn through the median'],answer:1,explain:'Never stop or back up on a freeway. Take the next exit.'},
+  {id:'l8',topic:'Lane Use',difficulty:'hard',q:'When entering a freeway, you should usually:',choices:['Stop at the end of the ramp','Use the acceleration lane and merge at traffic speed when safe','Force your way in immediately','Drive on the shoulder to gain speed'],answer:1,explain:'Use the ramp to build speed and merge smoothly when safe.'},
+
+  // PARKING
+  {id:'p1',topic:'Parking',difficulty:'easy',q:'When parking uphill with a curb, turn your front wheels:',choices:['Toward the curb','Away from the curb','Straight ahead','It does not matter'],answer:1,explain:'Uphill with a curb: turn wheels away from the curb.'},
+  {id:'p2',topic:'Parking',difficulty:'easy',q:'When parking downhill with or without a curb, turn your front wheels:',choices:['Away from the curb','Toward the curb','Straight ahead','To the left only'],answer:1,explain:'Downhill: turn wheels toward the curb or side of road.'},
+  {id:'p3',topic:'Parking',difficulty:'medium',q:'You may not park within how many feet of a fire hydrant?',choices:['10 feet','15 feet','20 feet','25 feet'],answer:1,explain:'Do not park within 15 feet of a fire hydrant.'},
+  {id:'p4',topic:'Parking',difficulty:'medium',q:'You may not park within how many feet of a crosswalk at an intersection?',choices:['5 feet','10 feet','20 feet','30 feet'],answer:2,explain:'Do not park within 20 feet of a crosswalk at an intersection.'},
+  {id:'p5',topic:'Parking',difficulty:'medium',q:'You may not park within how many feet of a stop sign or flashing signal?',choices:['10 feet','15 feet','20 feet','30 feet'],answer:0,explain:'Parking is prohibited within 10 feet of a stop sign or flashing signal.'},
+  {id:'p6',topic:'Parking',difficulty:'hard',q:'You may not park within how many feet of a railroad crossing?',choices:['20 feet','30 feet','40 feet','50 feet'],answer:3,explain:'Do not park within 50 feet of a railroad crossing.'},
+  {id:'p7',topic:'Parking',difficulty:'hard',q:'Before opening the door of a parked vehicle into traffic, you should:',choices:['Open it quickly','Check for traffic, bicycles, and pedestrians','Rely on passengers to warn you','Open only halfway'],answer:1,explain:'Always check to avoid hitting approaching bicycles, traffic, or pedestrians.'},
+  {id:'p8',topic:'Parking',difficulty:'medium',q:'You may not park on a bridge, tunnel, or overpass unless:',choices:['You turn on hazard lights','Signs allow it','You will be gone less than 5 minutes','Traffic is light'],answer:1,explain:'Parking is prohibited in those areas unless specifically allowed.'},
+
+  // ROUNDABOUTS
+  {id:'ro1',topic:'Roundabouts',difficulty:'easy',q:'Before entering a roundabout, you must yield to:',choices:['Traffic already in the roundabout','Only vehicles on your left lane','Nobody if you are first to arrive','Pedestrians only'],answer:0,explain:'Yield to traffic already circulating in the roundabout.'},
+  {id:'ro2',topic:'Roundabouts',difficulty:'easy',q:'In a roundabout, traffic generally moves:',choices:['Clockwise','Counterclockwise','Either direction','In reverse around the center island'],answer:1,explain:'In the U.S., roundabouts are driven counterclockwise.'},
+  {id:'ro3',topic:'Roundabouts',difficulty:'medium',q:'You should use your turn signal when leaving a roundabout to:',choices:['Show you are exiting','Tell others to speed up','Stop cross traffic','Reserve both lanes'],answer:0,explain:'Signal your exit so others know your intention.'},
+  {id:'ro4',topic:'Roundabouts',difficulty:'hard',q:'In a multilane roundabout, you should:',choices:['Choose the proper lane before entering','Change lanes in the middle without looking','Stop inside to read signs','Drive over the center island'],answer:0,explain:'Pick the correct lane before entering and follow lane markings.'},
+
+  // PEDESTRIANS / SCHOOL / BIKES
+  {id:'sh1',topic:'Sharing the Road',difficulty:'easy',q:'At a marked or unmarked crosswalk, drivers should:',choices:['Stop for pedestrians as required','Only stop for children','Never stop in a roundabout','Wave pedestrians through while moving'],answer:0,explain:'Drivers must stop and remain stopped for pedestrians in crosswalks as required.'},
+  {id:'sh2',topic:'Sharing the Road',difficulty:'easy',q:'When approaching a person using a white cane or guide dog, you must:',choices:['Proceed slowly without stopping','Stop and remain stopped as needed','Honk so they know you are there','Pass quickly'],answer:1,explain:'Drivers must use extra care and stop as required for blind pedestrians.'},
+  {id:'sh3',topic:'Sharing the Road',difficulty:'medium',q:'Before turning right across a bike lane, you should:',choices:['Cut across quickly','Yield to bicyclists in the bike lane','Only check your mirror','Merge without signaling'],answer:1,explain:'Yield to bicyclists traveling in the bike lane before turning across it.'},
+  {id:'sh4',topic:'Sharing the Road',difficulty:'medium',q:'A school bus with flashing red lights means you must:',choices:['Pass carefully on the left','Stop as required and remain stopped until the lights stop flashing','Only stop if children are visible','Ignore it on a four-lane road'],answer:1,explain:'Flashing red school bus lights require drivers to stop as the law requires.'},
+  {id:'sh5',topic:'Sharing the Road',difficulty:'hard',q:'If a bicyclist is riding in the travel lane, you should:',choices:['Force them right with your horn','Recognize they may lawfully use the lane in many situations','Assume they are breaking the law','Pass within inches if careful'],answer:1,explain:'Bicyclists may lawfully use the lane in many situations.'},
+  {id:'sh6',topic:'Sharing the Road',difficulty:'hard',q:'When approaching a stopped vehicle with hazard lights, tow truck, or roadside help vehicle displaying warning lights, you should:',choices:['Move over if safe or slow down','Maintain speed if in the far lane','Pass on the shoulder','Stop in your lane'],answer:0,explain:'Oregon requires drivers to move over when safe or slow down around certain stopped vehicles.'},
+  {id:'sh7',topic:'Sharing the Road',difficulty:'medium',q:'In a school zone, drivers should be especially alert for:',choices:['Children crossing unexpectedly','Only buses','Only crossing guards','No pedestrians after school'],answer:0,explain:'Children can be unpredictable near schools.'},
+  {id:'sh8',topic:'Sharing the Road',difficulty:'medium',q:'Motorcyclists are entitled to:',choices:['A full lane','Only half a lane','The shoulder during traffic','No space at intersections'],answer:0,explain:'Motorcycles are entitled to the full use of a lane.'},
+
+  // RAILROAD / WORK ZONES
+  {id:'rw1',topic:'Railroad & Work Zones',difficulty:'easy',q:'You must never drive around lowered railroad crossing gates because:',choices:['Trains are closer and faster than they appear','It saves time','Gates are only suggestions','Crossings are always empty after one train'],answer:0,explain:'Never go around lowered gates; another train may be coming.'},
+  {id:'rw2',topic:'Railroad & Work Zones',difficulty:'easy',q:'At a railroad crossing, if your vehicle stalls on the tracks, you should first:',choices:['Stay inside and call a friend','Get everyone out and away from the tracks','Try to wave at the train','Leave the car in gear'],answer:1,explain:'Get people out immediately and away from the tracks.'},
+  {id:'rw3',topic:'Railroad & Work Zones',difficulty:'medium',q:'In work zones, you should:',choices:['Watch for workers, signs, and changing conditions','Drive at your normal speed if traffic is light','Use your phone for navigation updates constantly','Pass all slow vehicles'],answer:0,explain:'Work zones require extra attention to workers, signs, and lane shifts.'},
+  {id:'rw4',topic:'Railroad & Work Zones',difficulty:'hard',q:'When you see warning lights at a railroad crossing, you should:',choices:['Cross if you do not see a train','Stop and wait','Speed up to beat the train','Proceed if the car ahead crossed'],answer:1,explain:'Flashing railroad lights mean stop and wait.'},
+  {id:'rw5',topic:'Railroad & Work Zones',difficulty:'hard',q:'Large trucks and buses may need extra room in work zones because:',choices:['They turn and stop differently','They always get the right of way','Workers will move out of the way','Their tires are wider'],answer:0,explain:'Large vehicles need more space to turn and stop.'},
+
+  // DEFENSIVE / IMPAIRED / DISTRACTED
+  {id:'d1',topic:'Safe Driving',difficulty:'easy',q:'The safest way to use a phone while driving is to:',choices:['Use it only at stop signs','Not use it while driving','Hold it below the window line','Text quickly at red lights'],answer:1,explain:'Distracted driving is dangerous; avoid using the phone while driving.'},
+  {id:'d2',topic:'Safe Driving',difficulty:'easy',q:'Wearing a safety belt is important because it:',choices:['Helps keep you in position and reduces injury risk','Guarantees no injury','Lets airbags work alone','Is only needed on highways'],answer:0,explain:'Safety belts reduce injury risk and help you stay in place.'},
+  {id:'d3',topic:'Safe Driving',difficulty:'medium',q:'Alcohol, cannabis, and some medicines can:',choices:['Only affect tired drivers','Reduce judgment, coordination, and reaction time','Improve confidence and safety','Affect only nighttime driving'],answer:1,explain:'Impairing substances reduce safe driving ability.'},
+  {id:'d4',topic:'Safe Driving',difficulty:'medium',q:'If you are feeling sleepy while driving, you should:',choices:['Open a window and keep going','Stop driving and rest','Drink more soda and speed up','Turn up music only'],answer:1,explain:'Drowsy driving is dangerous; stop and rest.'},
+  {id:'d5',topic:'Safe Driving',difficulty:'hard',q:'If another driver is aggressive, the best response is to:',choices:['Challenge them so they back down','Avoid eye contact, give space, and do not engage','Brake-check them','Follow them to report them later'],answer:1,explain:'Do not engage aggressive drivers; create space and stay calm.'},
+  {id:'d6',topic:'Safe Driving',difficulty:'hard',q:'If your wheels drop off the pavement edge, you should:',choices:['Yank the wheel back immediately','Slow down and return gradually when safe','Accelerate hard','Brake and turn sharply'],answer:1,explain:'Sudden steering can cause loss of control; slow and re-enter gradually.'},
+  {id:'d7',topic:'Safe Driving',difficulty:'medium',q:'A good following distance in normal conditions is at least:',choices:['The 2-second rule','The 3-second rule','One car length','Half a second'],answer:1,explain:'At least 3 seconds is a common minimum in normal conditions, more in poor conditions.'},
+  {id:'d8',topic:'Safe Driving',difficulty:'hard',q:'Hydroplaning is most likely when:',choices:['Roads are dry','Tires lose contact with the road on water','You drive below 10 mph','Your headlights are off'],answer:1,explain:'Hydroplaning happens when tires ride on water instead of the pavement.'},
+
+  // FREEWAY
+  {id:'f1',topic:'Freeway',difficulty:'easy',q:'On a freeway, slower traffic should generally:',choices:['Use the left lane','Keep right except to pass','Use any lane randomly','Drive on the shoulder'],answer:1,explain:'Keep right except to pass or when otherwise directed.'},
+  {id:'f2',topic:'Freeway',difficulty:'medium',q:'When leaving a freeway, you should:',choices:['Brake hard while still in the travel lane','Signal and move into the deceleration lane','Stop before the exit ramp','Back up if you miss the ramp'],answer:1,explain:'Move into the exit lane first, then slow.'},
+  {id:'f3',topic:'Freeway',difficulty:'hard',q:'If traffic is merging onto the freeway, drivers already on the freeway should:',choices:['Help create space when safe','Always stop','Move to the shoulder','Ignore merging traffic completely'],answer:0,explain:'It is safer to help merging vehicles by adjusting speed or lane when safe.'},
+  {id:'f4',topic:'Freeway',difficulty:'hard',q:'A red X over a lane means:',choices:['The lane is closed to traffic','The lane is for passing only','Traffic may use it slowly','HOV only'],answer:0,explain:'A red X indicates the lane is closed.'},
+
+  // HARDER SCENARIOS
+  {id:'h1',topic:'Scenarios',difficulty:'hard',q:'You are first at a red light and want to turn left onto a one-way street from a one-way street. What should you do?',choices:['Turn left on red after a full stop if no sign prohibits it and the way is clear','Turn only on green','Turn without stopping if no cars are coming','Wait for another car to turn first'],answer:0,explain:'A left turn on red may be allowed from a one-way street onto a one-way street after stopping, unless prohibited.'},
+  {id:'h2',topic:'Scenarios',difficulty:'hard',q:'At night, an oncoming car does not dim its high beams. What is the safest response?',choices:['Look directly at the lights to judge distance','Glance toward the right edge of your lane and avoid staring into the lights','Turn on your high beams too','Speed up to pass it faster'],answer:1,explain:'Avoid looking directly at glare; use the right edge of the road as a guide.'},
+  {id:'h3',topic:'Scenarios',difficulty:'hard',q:'You are approaching a crosswalk and one vehicle in the next lane has stopped. You should:',choices:['Pass the stopped vehicle carefully','Slow or stop because a pedestrian may be crossing','Honk and continue through','Move into the bike lane to get around'],answer:1,explain:'A stopped vehicle at a crosswalk may be yielding to a pedestrian.'},
+  {id:'h4',topic:'Scenarios',difficulty:'hard',q:'Your traffic light turns green, but the intersection is still blocked by traffic ahead. What should you do?',choices:['Enter the intersection and wait','Stay out until you can clear it','Use the horn and creep forward','Drive around the blockage'],answer:1,explain:'Do not enter an intersection unless you can clear it.'},
+  {id:'h5',topic:'Scenarios',difficulty:'hard',q:'A bicyclist is ahead in your lane near an intersection where you will turn right. What is best?',choices:['Pass and immediately cut across to turn','Slow down, yield as needed, and turn only when clear','Honk until the bicyclist moves','Turn from the center lane'],answer:1,explain:'Do not cut off a bicyclist when turning right.'},
+  {id:'h6',topic:'Scenarios',difficulty:'hard',q:'What is the safest general rule in fog?',choices:['Use high beams so others see you','Slow down, use low beams, and increase following distance','Stop in the lane until it clears','Use parking lights only'],answer:1,explain:'Low beams and reduced speed are safer in fog.'},
+  {id:'h7',topic:'Scenarios',difficulty:'hard',q:'If your brakes get wet and do not work well, what should you do?',choices:['Pump them lightly to dry them after checking traffic','Accelerate to create heat','Set the parking brake at speed','Turn off the engine'],answer:0,explain:'After passing through water, test brakes lightly when safe.'},
+  {id:'h8',topic:'Scenarios',difficulty:'hard',q:'When towing or driving near a large truck, you should remember:',choices:['Large trucks have smaller blind spots than cars','Trucks need more room to stop and turn','You can always see the driver in mirrors','They can stop faster downhill'],answer:1,explain:'Large trucks need extra space and have large blind spots.'}
 ];
 
-let current=0,score=0,quizData=[],hard=false;
+const state = {
+  quiz: [],
+  idx: 0,
+  score: 0,
+  mode: '',
+  answers: [],
+  timerSec: 0,
+  interval: null,
+  topic: null
+};
 
-function startQuiz(num,h=false){
-hard=h;
-quizData=[...questions].sort(()=>.5-Math.random()).slice(0,num);
-current=0;score=0;
-document.getElementById("menu").style.display="none";
-document.getElementById("quiz").style.display="block";
-showQuestion();
+const storageKey = 'oregon_dmv_app_v3';
+function loadData(){
+  return JSON.parse(localStorage.getItem(storageKey) || '{"history":[],"missed":{},"topicStats":{},"streak":0,"lastDate":"","lastReview":[]}' );
+}
+function saveData(data){ localStorage.setItem(storageKey, JSON.stringify(data)); }
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function sampleQuestions(list, n){
+  return shuffle(list).slice(0, Math.min(n, list.length));
+}
+function filterByTopic(topic){ return QUESTIONS.filter(q=>q.topic===topic); }
+function uniqueTopics(){ return [...new Set(QUESTIONS.map(q=>q.topic))].sort(); }
+
+function show(id){
+  ['home','topicPicker','quiz','results','review','dashboard'].forEach(x=>document.getElementById(x).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+}
+function goHome(){
+  clearInterval(state.interval);
+  updateStreak();
+  show('home');
+}
+function updateStreak(){
+  const data = loadData();
+  document.getElementById('streak').textContent = data.history.length ? `Quizzes taken: ${data.history.length}` : 'No quizzes taken yet';
+}
+function buildTopicButtons(){
+  const box = document.getElementById('topicButtons');
+  box.innerHTML = '';
+  uniqueTopics().forEach(topic=>{
+    const btn = document.createElement('button');
+    btn.className='secondary';
+    btn.textContent = topic;
+    btn.onclick = ()=>startTopicDrill(topic);
+    box.appendChild(btn);
+  });
+}
+function showTopicPicker(){ buildTopicButtons(); show('topicPicker'); }
+
+function startMode(mode){
+  state.mode = mode;
+  state.idx = 0; state.score = 0; state.answers = []; state.topic = null;
+  let pool = QUESTIONS;
+  let n = 10;
+  if(mode==='full'){ n=35; }
+  if(mode==='timed'){ n=35; state.timerSec = 35*60; }
+  else { state.timerSec = 0; }
+  if(mode==='hard'){ pool = QUESTIONS.filter(q=>q.difficulty==='hard'); n=15; }
+  if(mode==='quick'){ n=10; }
+  state.quiz = sampleQuestions(pool, n);
+  startQuizUI();
+}
+function startTopicDrill(topic){
+  state.mode = 'topic';
+  state.idx = 0; state.score = 0; state.answers = []; state.topic = topic; state.timerSec = 0;
+  const pool = filterByTopic(topic);
+  state.quiz = sampleQuestions(pool, Math.min(12, pool.length));
+  startQuizUI();
+}
+function startMissedOnly(){
+  const data = loadData();
+  const ids = Object.keys(data.missed||{}).filter(k=>data.missed[k]>0);
+  let pool = QUESTIONS.filter(q=>ids.includes(q.id));
+  if(pool.length===0) pool = QUESTIONS.filter(q=>q.difficulty!=='easy');
+  state.mode = 'missed';
+  state.idx = 0; state.score = 0; state.answers = []; state.topic = null; state.timerSec = 0;
+  state.quiz = sampleQuestions(pool, Math.min(20, pool.length));
+  startQuizUI();
+}
+function startQuizUI(){
+  show('quiz');
+  document.getElementById('feedback').classList.add('hidden');
+  document.getElementById('nextBtn').classList.add('hidden');
+  document.getElementById('modeTitle').textContent = ({
+    quick:'Quick Practice', full:'Full DMV-Style Test', timed:'Timed Test', hard:'Hard Mode', topic:`Topic Drill: ${state.topic}`, missed:'Missed Questions Only'
+  })[state.mode];
+  runTimer();
+  renderQuestion();
+}
+function runTimer(){
+  clearInterval(state.interval);
+  const timer = document.getElementById('timer');
+  if(!state.timerSec){ timer.textContent=''; return; }
+  const paint = ()=>{
+    const m = Math.floor(state.timerSec/60), s = String(state.timerSec%60).padStart(2,'0');
+    timer.textContent = `${m}:${s}`;
+  };
+  paint();
+  state.interval = setInterval(()=>{
+    state.timerSec--;
+    paint();
+    if(state.timerSec<=0){
+      clearInterval(state.interval);
+      finishQuiz(true);
+    }
+  },1000);
+}
+function signHTML(q){
+  if(!q.sign) return '';
+  const cls = q.signType ? `signbox sign-${q.signType}` : 'signbox';
+  return `<div class="${cls}">${q.sign}</div>`;
+}
+function renderQuestion(){
+  const q = state.quiz[state.idx];
+  document.getElementById('qNum').textContent = `Question ${state.idx+1} of ${state.quiz.length}`;
+  document.getElementById('topicLabel').textContent = q.topic;
+  document.getElementById('scoreNow').textContent = state.score;
+  document.getElementById('overallBar').style.width = `${(state.idx/state.quiz.length)*100}%`;
+  document.getElementById('questionText').textContent = q.q;
+  const signC = document.getElementById('signContainer');
+  if(q.sign){ signC.innerHTML = signHTML(q); signC.classList.remove('hidden'); } else { signC.classList.add('hidden'); signC.innerHTML=''; }
+  const options = document.getElementById('options');
+  options.innerHTML = '';
+  q.choices.forEach((choice,i)=>{
+    const b = document.createElement('button');
+    b.className = 'option';
+    b.textContent = choice;
+    b.onclick = ()=>answerQuestion(i,b);
+    options.appendChild(b);
+  });
+  document.getElementById('feedback').classList.add('hidden');
+  document.getElementById('nextBtn').classList.add('hidden');
+}
+function answerQuestion(i,btn){
+  const q = state.quiz[state.idx];
+  const correct = i===q.answer;
+  state.answers.push({id:q.id, chosen:i, correct, question:q.q, explain:q.explain, correctText:q.choices[q.answer], topic:q.topic});
+  if(correct) state.score++;
+  [...document.querySelectorAll('.option')].forEach((b,idx)=>{
+    b.disabled = true;
+    if(idx===q.answer) b.classList.add('correct');
+    if(idx===i && idx!==q.answer) b.classList.add('wrong');
+  });
+
+  const data = loadData();
+  data.topicStats[q.topic] ||= {right:0,total:0};
+  data.topicStats[q.topic].total++;
+  if(correct) data.topicStats[q.topic].right++;
+  else data.missed[q.id] = (data.missed[q.id]||0)+1;
+  if(correct && data.missed[q.id]) data.missed[q.id] = Math.max(0, data.missed[q.id]-1);
+  saveData(data);
+
+  const fb = document.getElementById('feedback');
+  fb.innerHTML = `<div class="big"><b>${correct ? 'Correct' : 'Not quite'}</b></div>
+                  <div style="margin-top:8px">Correct answer: <b>${q.choices[q.answer]}</b></div>
+                  <div class="small" style="margin-top:8px">${q.explain}</div>`;
+  fb.classList.remove('hidden');
+  document.getElementById('scoreNow').textContent = state.score;
+  document.getElementById('nextBtn').classList.remove('hidden');
+}
+function nextQuestion(){
+  state.idx++;
+  if(state.idx >= state.quiz.length) finishQuiz(false);
+  else renderQuestion();
+}
+function finishQuiz(timedOut){
+  clearInterval(state.interval);
+  const passed = state.mode!=='quick' && state.mode!=='topic' && state.mode!=='missed' ? state.score >= 28 : null;
+  const pct = Math.round((state.score/state.quiz.length)*100);
+  const data = loadData();
+  const today = new Date().toISOString().slice(0,10);
+  if(data.lastDate !== today){ data.streak = (data.lastDate && diffDays(data.lastDate,today)===1) ? data.streak+1 : 1; data.lastDate = today; }
+  data.lastReview = state.answers;
+  data.history.push({date:new Date().toLocaleString(), mode:state.mode, score:state.score, total:state.quiz.length, pct, passed});
+  saveData(data);
+
+  let body = `<div class="grid two">
+      <div class="kpi"><div class="small">Score</div><div class="n">${state.score}/${state.quiz.length}</div></div>
+      <div class="kpi"><div class="small">Percent</div><div class="n">${pct}%</div></div>
+    </div>`;
+  if(passed!==null){
+    body += `<p class="big">${passed ? 'PASS' : 'KEEP PRACTICING'} ${timedOut ? '(time expired)' : ''}</p>`;
+    body += `<p class="small">Full Oregon Class C knowledge tests use 35 multiple-choice questions and require 28 correct to pass.</p>`;
+  }
+  const wrong = state.answers.filter(a=>!a.correct);
+  if(wrong.length){
+    body += `<hr><h3>Missed topics</h3><div class="row">` + [...new Set(wrong.map(w=>w.topic))].map(t=>`<span class="badge">${t}</span>`).join('') + `</div>`;
+  }
+  body += `<hr><h3>Next move</h3><p class="small">${wrong.length ? 'Use Missed Questions Only to reinforce weak areas.' : 'Nice job. Try Hard Mode or Timed Test next.'}</p>`;
+  document.getElementById('resultsBody').innerHTML = body;
+  show('results');
+}
+function diffDays(a,b){
+  return Math.round((new Date(b)-new Date(a))/86400000);
+}
+function reviewLastQuiz(){
+  const data = loadData();
+  const items = data.lastReview || [];
+  let html = '';
+  if(!items.length){ html = '<p class="small">No review available yet.</p>'; }
+  else {
+    items.forEach((it,idx)=>{
+      html += `<div class="card" style="background:#0b1220"><div class="small">#${idx+1} · ${it.topic}</div><div><b>${it.question}</b></div>
+      <div class="small" style="margin-top:6px">${it.correct ? 'Correct' : 'Incorrect'} · Correct answer: <b>${it.correctText}</b></div>
+      <div class="small" style="margin-top:6px">${it.explain}</div></div>`;
+    });
+  }
+  document.getElementById('reviewBody').innerHTML = html;
+  show('review');
+}
+function pct(n,d){ return d ? Math.round((n/d)*100) : 0; }
+function showDashboard(){
+  const data = loadData();
+  const hist = data.history || [];
+  const totalQ = hist.reduce((a,b)=>a+b.total,0);
+  const totalRight = hist.reduce((a,b)=>a+b.score,0);
+  const passRate = hist.filter(h=>h.passed!==null).length ? pct(hist.filter(h=>h.passed).length, hist.filter(h=>h.passed!==null).length) : 0;
+  const bestFull = Math.max(0, ...hist.filter(h=>h.mode==='full' || h.mode==='timed').map(h=>h.score));
+  let html = `<div class="grid two">
+      <div class="kpi"><div class="small">Quizzes Taken</div><div class="n">${hist.length}</div></div>
+      <div class="kpi"><div class="small">Average Score</div><div class="n">${hist.length ? pct(totalRight,totalQ) : 0}%</div></div>
+      <div class="kpi"><div class="small">Best Full-Test Score</div><div class="n">${bestFull}/35</div></div>
+      <div class="kpi"><div class="small">Pass Rate</div><div class="n">${passRate}%</div></div>
+    </div>`;
+  html += `<hr><h3>Topic progress</h3>`;
+  const topics = uniqueTopics();
+  topics.forEach(topic=>{
+    const st = data.topicStats[topic] || {right:0,total:0};
+    const pc = pct(st.right, st.total);
+    html += `<div class="topic-bar"><div>${topic}</div><div class="progress"><div style="width:${pc}%"></div></div><div class="small">${st.total ? pc+'%' : '—'}</div></div>`;
+  });
+  const missedEntries = Object.entries(data.missed||{}).filter(([,v])=>v>0).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  html += `<hr><h3>Most-missed areas</h3>`;
+  if(!missedEntries.length) html += `<p class="small">Nothing here yet. Nice start.</p>`;
+  else {
+    html += missedEntries.map(([id,count])=>{
+      const q = QUESTIONS.find(x=>x.id===id);
+      return `<div class="card" style="background:#0b1220"><div class="small">${q.topic} · missed ${count} time(s)</div><div>${q.q}</div></div>`;
+    }).join('');
+  }
+  html += `<hr><h3>Recent quiz history</h3>`;
+  if(!hist.length) html += `<p class="small">No saved history yet.</p>`;
+  else {
+    html += hist.slice(-10).reverse().map(h=>`<div class="row" style="justify-content:space-between;border-bottom:1px solid #223049;padding:8px 0"><div>${labelMode(h.mode)} <span class="small">${h.date}</span></div><div><b>${h.score}/${h.total}</b></div></div>`).join('');
+  }
+  document.getElementById('dashboardBody').innerHTML = html;
+  show('dashboard');
+}
+function labelMode(mode){
+  return ({quick:'Quick', full:'Full', timed:'Timed', hard:'Hard', topic:'Topic', missed:'Missed'})[mode] || mode;
+}
+function quitQuiz(){
+  if(confirm('Quit this quiz and go home?')) goHome();
+}
+function resetProgress(){
+  if(confirm('Erase saved quiz history, topic tracking, and missed-question data?')){
+    localStorage.removeItem(storageKey);
+    updateStreak();
+    alert('Progress reset.');
+  }
 }
 
-function showQuestion(){
-let q=quizData[current];
-let html="<div class='card'><h2>"+q.q+"</h2>";
-q.a.forEach((opt,i)=>{
-html+=`<button onclick="answer(${i})">${opt}</button><br>`;
-});
-html+="</div>";
-document.getElementById("quiz").innerHTML=html;
-}
-
-function answer(i){
-if(i===quizData[current].c)score++;
-current++;
-if(current<quizData.length)showQuestion();
-else finish();
-}
-
-function finish(){
-let pass=score>=28;
-let html=`<div class='card'><h2>Score: ${score}/${quizData.length}</h2>`;
-if(quizData.length===35){
-html+=pass?"<h3 style='color:lime'>PASS</h3>":"<h3 style='color:red'>FAIL</h3>";
-}
-html+="<button onclick='location.reload()'>Restart</button></div>";
-document.getElementById("quiz").innerHTML=html;
-
-saveStats(score,quizData.length);
-}
-
-function saveStats(s,total){
-let data=JSON.parse(localStorage.getItem("stats")||"[]");
-data.push({score:s,total:total});
-localStorage.setItem("stats",JSON.stringify(data));
-}
-
-function showStats(){
-document.getElementById("menu").style.display="none";
-document.getElementById("stats").style.display="block";
-let data=JSON.parse(localStorage.getItem("stats")||"[]");
-let html="<div class='card'><h2>Progress</h2>";
-if(data.length===0)html+="No data yet";
-else{
-let avg=data.reduce((a,b)=>a+b.score,0)/data.length;
-html+=`<p>Tests taken: ${data.length}</p>`;
-html+=`<p>Average score: ${avg.toFixed(1)}</p>`;
-}
-html+="<button onclick='location.reload()'>Back</button></div>";
-document.getElementById("stats").innerHTML=html;
-}
+buildTopicButtons();
+updateStreak();
 </script>
 </body>
 </html>
